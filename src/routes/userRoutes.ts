@@ -1,8 +1,13 @@
 import { Router } from "express";
 import UserController from "../User/UserController";
+import UserService from "../User/UserService";
+import UserRepository from "../User/UserRepository";
+
+const userRepository = new UserRepository();
+const userService = new UserService(userRepository);
+const userController = new UserController(userService);
 
 export const userRoutes = Router();
-const userController = new UserController();
 
 userRoutes.get('/users', userController.findAll);
 userRoutes.post('/users', userController.create);
