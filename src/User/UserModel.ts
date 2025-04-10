@@ -1,10 +1,10 @@
 import { model, Schema } from "mongoose"
 import { userRole } from "../utils/enum/userRole";
 
-interface IUser {
+export interface IUser {
     email: string,
     password: string,
-    role: userRole
+    role?: userRole
 }
 
 const userSchema = new Schema<IUser>({
