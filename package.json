@@ -1,0 +1,32 @@
+{
+  "name": "project-manager-api",
+  "version": "1.0.0",
+  "description": "Um app onde você cadastra seus projetos pessoais (ou de estudo/trabalho), visualiza o status de cada um, define prazos, e controla o progresso.",
+  "main": "index.js",
+  "scripts": {
+    "test": "vitest --run"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AleexGarcia/project-manager.git"
+  },
+  "author": "AleexGarcia",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/AleexGarcia/project-manager/issues"
+  },
+  "homepage": "https://github.com/AleexGarcia/project-manager#readme",
+  "devDependencies": {
+    "@types/express": "^5.0.1",
+    "@types/node": "^22.14.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "eslint": "^9.24.0",
+    "express": "^5.1.0",
+    "mongoose": "^8.13.2",
+    "nodemon": "^3.1.9",
+    "ts-node-dev": "^2.0.0",
+    "typescript": "^5.8.3",
+    "vitest": "^3.1.1"
+  }
+}
