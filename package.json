@@ -4,7 +4,9 @@
   "description": "Um app onde você cadastra seus projetos pessoais (ou de estudo/trabalho), visualiza o status de cada um, define prazos, e controla o progresso.",
   "main": "index.js",
   "scripts": {
-    "test": "vitest --run"
+    "test": "vitest --run",
+    "start": "ts-node-dev src/index.ts",
+    "build": "tsc"
   },
   "repository": {
     "type": "git",

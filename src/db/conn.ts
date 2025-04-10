@@ -1,4 +1,4 @@
-import { connect } from 'mongoose';
+import { connect, disconnect } from 'mongoose';
 import dotenv from 'dotenv';
 
 dotenv.config();

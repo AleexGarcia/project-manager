@@ -4,25 +4,35 @@ import UserService from './UserService';
 import UserRepository from './UserRepository';
 import UserController from './UserController';
 import { makeMockResponse } from '../__mocks__/MockResponse.mock';
+import { User } from './UserModel';
 
 vi.mock('./UserRepository', () => {
     return {
-        create: vi.fn().mockImplementation((user) => {
-            const users = [
-                { email: 'teste@email.com', password: '12345678' }
-            ];
+        default: vi.fn().mockImplementation(() => {
+            return {
+                create: vi.fn().mockImplementation(async (email, password) => {
 
-            const isUnique = !users.find(existingUser => existingUser.email === user.email);
-            
-            if (isUnique) {
-                throw new Error('Email already in use');
-            }
+                    const users = [
+                        { email: 'teste@email.com', password: '12345678' }
+                    ];
+                    const newUser = { email, password };
+                    const isUnique = !users.find(existingUser => existingUser.email === newUser.email);
 
-            const savedUser = { ...user, _id: 'new_id', role: 'regular' };
-            users.push(savedUser);
-            return savedUser;
+                    if (!isUnique) {
+                        const error = new Error('Email is already registered.');
+                        error.name = 'Conflict';
+                        throw error;
+                    }
+
+                    await User.validate({ email, password });
+
+                    const savedUser = { ...newUser, _id: 'new_id', role: 'regular' };
+                    users.push(savedUser);
+                    return savedUser;
+                })
+            };
         })
-    }
+    };
 });
 
 const mockedUserRepository = new UserRepository();
@@ -38,17 +48,20 @@ describe('UserController', () => {
                 }
             } as Request;
             const mockResponse = makeMockResponse();
-            await userController.create(mockRequest, mockResponse)
+            await userController.create(mockRequest, mockResponse);
+            console.log(mockResponse);
             expect(mockResponse.state.status).toBe(201);
-            expect(mockResponse.state.json).toMatchObject({ message: 'created' });
+            expect(mockResponse.state.json).toMatchObject({ ...mockRequest.body, _id: 'new_id', role: 'regular' });
         });
 
         it('Should respond with 400 Bad Request if email or password is missing or invalid (empty, undefined, or null).', async () => {
 
             const testCases = [
-                { email: '', password: '', expectedMessage: 'Email and Password are required' },
-                { email: undefined, password: undefined, expectedMessage: 'Email and Password are required' },
-                { email: null, password: null, expectedMessage: 'Email and Password are required' }
+                {
+                    email: '', password: '', expectedMessage: ["Email is required","Password is required"]
+                },
+                { email: undefined, password: undefined, expectedMessage: ["Email is required","Password is required"] },
+                { email: null, password: null, expectedMessage: ["Email is required","Password is required"] }
             ]
 
             for (const { email, password, expectedMessage } of testCases) {
@@ -60,7 +73,7 @@ describe('UserController', () => {
                 await userController.create(mockRequest, mockResponse);
 
                 expect(mockResponse.state.status).toBe(400);
-                expect(mockResponse.state.json).toMatchObject({ message: expectedMessage });
+                expect(mockResponse.state.json).toMatchObject({ message:  ["Email is required","Password is required"]});
             }
 
         });
@@ -68,7 +81,7 @@ describe('UserController', () => {
         it('Should respond with 409 Conflict if the email is already in use', async () => {
             const mockRequest = {
                 body: {
-                    email: 'alexandre@email.com', password: 'test123'
+                    email: 'teste@email.com', password: 'test123'
                 }
             } as Request;
 
